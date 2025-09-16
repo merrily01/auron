@@ -28,16 +28,20 @@ if [ "$CI" ]; then
   export MAVEN_CLI_OPTS="--no-transfer-progress --errors --fail-fast"
 fi
 
-# Installs any application tarball given a URL, the expected tarball name,
-# and, optionally, a checkable binary path to determine if the binary has
-# already been installed
-## Arg1 - URL
-## Arg2 - Tarball Name
-## Arg3 - Checkable Binary
+# ---------------------------------------------------------------
+# Function: install_app
+# Installs an application tarball if not already present.
+# Arguments:
+#   1 - Base URL of the tarball
+#   2 - Tarball name
+#   3 - Optional path to a binary to check for existing installation
+#   4 - Optional URL query suffix
+# ---------------------------------------------------------------
 install_app() {
   local remote_tarball="$1/$2$4"
   local local_tarball="${_DIR}/$2"
   local binary="${_DIR}/$3"
+  local target_dir="${_DIR}/${3%/bin/mvn}"
 
   # setup `curl` and `wget` silent options if we're running on Jenkins
   local curl_opts="-L"
@@ -45,62 +49,142 @@ install_app() {
   curl_opts="--progress-bar ${curl_opts}"
   wget_opts="--progress=bar:force ${wget_opts}"
 
-  if [ -z "$3" -o ! -f "$binary" ]; then
-    # check if we already have the tarball
-    # check if we have curl installed
-    # download application
-    [ ! -f "${local_tarball}" ] && [ $(command -v curl) ] && \
-      echo "exec: curl ${curl_opts} ${remote_tarball}" 1>&2 && \
-      curl ${curl_opts} "${remote_tarball}" > "${local_tarball}"
-    # if the file still doesn't exist, lets try `wget` and cross our fingers
-    [ ! -f "${local_tarball}" ] && [ $(command -v wget) ] && \
-      echo "exec: wget ${wget_opts} ${remote_tarball}" 1>&2 && \
-      wget ${wget_opts} -O "${local_tarball}" "${remote_tarball}"
-    # if both were unsuccessful, exit
-    [ ! -f "${local_tarball}" ] && \
-      echo -n "ERROR: Cannot download $2 with cURL or wget; " && \
-      echo "please install manually and try again." && \
-      exit 2
-    cd "${_DIR}" && tar -xzf "$2"
-    rm -rf "$local_tarball"
+  # Check if Maven is already installed in target_dir
+  # If valid, skip installation. Otherwise, remove and reinstallation.
+  if [ -d "${target_dir}" ]; then
+    if "$binary" --version >/dev/null 2>&1; then
+      echo "[INFO] Valid Maven installation found at $binary. Skipping installation."
+      return 0
+    else
+      echo "[WARN] Invalid Maven installation detected at $binary. Cleaning up before reinstallation."
+      rm -rf "${target_dir}"
+    fi
   fi
-}
 
-# Determine the Maven version from the root pom.xml file and
-# install maven under the build/ folder if needed.
-install_mvn() {
-  local MVN_VERSION=`grep "<maven.version>" "${_DIR}/../pom.xml" | head -n1 | awk -F '[<>]' '{print $3}'`
-  MVN_BIN="$(command -v mvn)"
-  if [ "$MVN_BIN" ]; then
-    local MVN_DETECTED_VERSION="$(mvn --version | head -n1 | awk '{print $3}')"
-  fi
-  # See simple version normalization: http://stackoverflow.com/questions/16989598/bash-comparing-version-numbers
-  function version { echo "$@" | awk -F. '{ printf("%03d%03d%03d\n", $1,$2,$3); }'; }
-  if [ $(version $MVN_DETECTED_VERSION) -ne $(version $MVN_VERSION) ]; then
-    local APACHE_MIRROR=${APACHE_MIRROR:-'https://www.apache.org/dyn/closer.lua'}
-    local MIRROR_URL_QUERY="?action=download"
-    local MVN_TARBALL="apache-maven-${MVN_VERSION}-bin.tar.gz"
-    local FILE_PATH="maven/maven-3/${MVN_VERSION}/binaries"
+  # Check if the tarball already exists locally
+  if [ -f "${local_tarball}" ]; then
+      echo "[INFO] Found existing tarball ${local_tarball}, reusing it."
+  else
+    # Download the tarball using curl or wget
+    download_tool=""
 
     if [ $(command -v curl) ]; then
+      echo "[INFO] Downloading with curl..."
+      if curl ${curl_opts} "${remote_tarball}" > "${local_tarball}"; then
+        download_tool="curl"
+      else
+        echo "[WARN] curl download failed"
+      fi
+    fi
+
+    if [ -z "$download_tool" ] && [ $(command -v wget) ]; then
+      echo "[INFO] Falling back to wget..."
+      if wget ${wget_opts} -O "${local_tarball}" "${remote_tarball}"; then
+        download_tool="wget"
+      else
+        echo "[WARN] wget download failed"
+      fi
+    fi
+
+    if [ -z "$download_tool" ]; then
+      echo -n "[ERROR] Cannot download $2 with cURL or wget; " && \
+      echo "Ensure curl/wget works and network is up." && \
+      exit 2
+    fi
+
+    echo "[INFO] Successfully downloaded with $download_tool"
+  fi
+
+  # Extract tarball to target directory
+  cd "${_DIR}"
+  echo "[INFO] Extracting ${local_tarball} to ${target_dir}..."
+  if ! tar -xzf "${local_tarball}"; then
+    echo "[INFO] Cleaning up partial files..."
+    echo "  - ${local_tarball}"
+    echo "  - ${target_dir}"
+
+    rm -f "${local_tarball}"
+    rm -rf "${target_dir}"
+
+    echo "[ERROR] Extraction failed. Please retry after cleaning up."
+    exit 2
+  fi
+
+  echo "[INFO] Removing downloaded tarball: ${local_tarball}"
+  rm -rf "$local_tarball"
+}
+
+# ---------------------------------------------------------------
+# Function: install_mvn
+# Detects Maven version from pom.xml and installs required Maven
+# if not present or version mismatch under build/.
+# ---------------------------------------------------------------
+install_mvn() {
+  local MVN_REQUIRED_VERSION=`grep "<maven.version>" "${_DIR}/../pom.xml" | head -n1 | awk -F '[<>]' '{print $3}'`
+
+  # Check if MVN_HOME is set and Maven binary exists
+  if [ -n "$MVN_HOME" ]; then
+    MVN_BIN="${MVN_HOME%/}/bin/mvn"
+    if [ ! -x "$MVN_BIN" ]; then
+      echo "[WARN] MVN_HOME is set but $MVN_BIN not found or not executable."
+    else
+      echo "[INFO] Found mvn via MVN_HOME: $MVN_BIN"
+    fi
+  else
+    # Check if Maven is available in PATH
+    MVN_BIN="$(command -v mvn || true)"
+    if [ -z "$MVN_BIN" ]; then
+      echo "[WARN] No Maven detected, will install required version"
+    else
+      echo "[INFO] Found mvn via PATH: $MVN_BIN"
+    fi
+  fi
+
+  # Detect installed Maven version
+   MVN_DETECTED_VERSION=""
+   if [ -n "$MVN_BIN" ] && [ -x "$MVN_BIN" ]; then
+     MVN_DETECTED_VERSION="$("$MVN_BIN" --version 2>/dev/null | head -n1 | awk '{print $3}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+   fi
+
+  # Helper function to normalize version for numeric comparison
+  # See simple version normalization: http://stackoverflow.com/questions/16989598/bash-comparing-version-numbers
+  function version { echo "$@" | awk -F. '{ printf("%03d%03d%03d\n", $1,$2,$3); }'; }
+
+  # If version mismatch, download and install required Maven
+  if [ "$(version "$MVN_DETECTED_VERSION")" -ne "$(version "$MVN_REQUIRED_VERSION")" ]; then
+    echo "[WARN] Maven version mismatch:"
+    echo "       Detected: $MVN_DETECTED_VERSION"
+    echo "       Required: $MVN_REQUIRED_VERSION"
+    echo "[INFO] You can:"
+    echo "       1. Set MVN_HOME to point to a correct Maven installation"
+    echo "       2. Let this script download the required version automatically"
+    echo "[INFO] Proceeding with Maven setup..."
+
+    local APACHE_MIRROR=${APACHE_MIRROR:-'https://www.apache.org/dyn/closer.lua'}
+    local MIRROR_URL_QUERY="?action=download"
+    local MVN_TARBALL="apache-maven-${MVN_REQUIRED_VERSION}-bin.tar.gz"
+    local FILE_PATH="maven/maven-3/${MVN_REQUIRED_VERSION}/binaries"
+
+    # Check if the tarball exists on mirror, fallback if necessary
+    if command -v curl >/dev/null 2>&1; then
       if ! curl -L --output /dev/null --silent --head --fail "${APACHE_MIRROR}/${FILE_PATH}/${MVN_TARBALL}${MIRROR_URL_QUERY}" ; then
-        # Fall back to archive.apache.org for older Maven
-        echo "Falling back to archive.apache.org to download Maven"
         APACHE_MIRROR="https://archive.apache.org/dist"
         MIRROR_URL_QUERY=""
       fi
     fi
 
+    # Download and install Maven
     install_app \
       "${APACHE_MIRROR}/${FILE_PATH}" \
       "${MVN_TARBALL}" \
-      "apache-maven-${MVN_VERSION}/bin/mvn" \
+      "apache-maven-${MVN_REQUIRED_VERSION}/bin/mvn" \
       "${MIRROR_URL_QUERY}"
 
-    MVN_BIN="${_DIR}/apache-maven-${MVN_VERSION}/bin/mvn"
+    MVN_BIN="${_DIR}/apache-maven-${MVN_REQUIRED_VERSION}/bin/mvn"
   fi
 }
 
+# Execute Maven installation check
 install_mvn
 
 cd "${_CALLING_DIR}"
@@ -108,5 +192,14 @@ cd "${_CALLING_DIR}"
 # Set any `mvn` options if not already present
 export MAVEN_OPTS=${MAVEN_OPTS:-"$_COMPILE_JVM_OPTS"}
 
-echo "Using \`mvn\` from path: $MVN_BIN" 1>&2
+# Final validation and Maven execution
+if [ -n "$MVN_BIN" ] && [ -x "$MVN_BIN" ]; then
+  echo "[INFO] Using Maven: $MVN_BIN"
+  "$MVN_BIN" -version
+else
+  echo "[ERROR] No valid Maven installation found or executable is broken. Please try again."
+  exit 1
+fi
+
+# Execute Maven with provided arguments
 ${MVN_BIN} $MAVEN_CLI_OPTS "$@"
