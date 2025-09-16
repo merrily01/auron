@@ -195,7 +195,6 @@ export MAVEN_OPTS=${MAVEN_OPTS:-"$_COMPILE_JVM_OPTS"}
 # Final validation and Maven execution
 if [ -n "$MVN_BIN" ] && [ -x "$MVN_BIN" ]; then
   echo "[INFO] Using Maven: $MVN_BIN"
-  "$MVN_BIN" -version
 else
   echo "[ERROR] No valid Maven installation found or executable is broken. Please try again."
   exit 1
