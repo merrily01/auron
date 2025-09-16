@@ -53,64 +53,64 @@ install_app() {
   # If valid, skip installation. Otherwise, remove and reinstallation.
   if [ -d "${target_dir}" ]; then
     if "$binary" --version >/dev/null 2>&1; then
-      echo "[INFO] Valid Maven installation found at $binary. Skipping installation."
+      echo "[INFO] Valid Maven installation found at $binary. Skipping installation." 1>&2
       return 0
     else
-      echo "[WARN] Invalid Maven installation detected at $binary. Cleaning up before reinstallation."
+      echo "[WARN] Invalid Maven installation detected at $binary. Cleaning up before reinstallation." 1>&2
       rm -rf "${target_dir}"
     fi
   fi
 
   # Check if the tarball already exists locally
   if [ -f "${local_tarball}" ]; then
-      echo "[INFO] Found existing tarball ${local_tarball}, reusing it."
+      echo "[INFO] Found existing tarball ${local_tarball}, reusing it." 1>&2
   else
     # Download the tarball using curl or wget
     download_tool=""
 
     if [ $(command -v curl) ]; then
-      echo "[INFO] Downloading with curl..."
+      echo "[INFO] Downloading with curl..." 1>&2
       if curl ${curl_opts} "${remote_tarball}" > "${local_tarball}"; then
         download_tool="curl"
       else
-        echo "[WARN] curl download failed"
+        echo "[WARN] curl download failed" 1>&2
       fi
     fi
 
     if [ -z "$download_tool" ] && [ $(command -v wget) ]; then
-      echo "[INFO] Falling back to wget..."
+      echo "[INFO] Falling back to wget..." 1>&2
       if wget ${wget_opts} -O "${local_tarball}" "${remote_tarball}"; then
         download_tool="wget"
       else
-        echo "[WARN] wget download failed"
+        echo "[WARN] wget download failed" 1>&2
       fi
     fi
 
     if [ -z "$download_tool" ]; then
-      echo -n "[ERROR] Cannot download $2 with cURL or wget; " && \
-      echo "Ensure curl/wget works and network is up." && \
+      echo -n "[ERROR] Cannot download $2 with cURL or wget; " 1>&2 && \
+      echo "Ensure curl/wget works and network is up." 1>&2 && \
       exit 2
     fi
 
-    echo "[INFO] Successfully downloaded with $download_tool"
+    echo "[INFO] Successfully downloaded with $download_tool" 1>&2
   fi
 
   # Extract tarball to target directory
   cd "${_DIR}"
-  echo "[INFO] Extracting ${local_tarball} to ${target_dir}..."
+  echo "[INFO] Extracting ${local_tarball} to ${target_dir}..." 1>&2
   if ! tar -xzf "${local_tarball}"; then
-    echo "[INFO] Cleaning up partial files..."
+    echo "[INFO] Cleaning up partial files..." 1>&2
     echo "  - ${local_tarball}"
     echo "  - ${target_dir}"
 
     rm -f "${local_tarball}"
     rm -rf "${target_dir}"
 
-    echo "[ERROR] Extraction failed. Please retry after cleaning up."
+    echo "[ERROR] Extraction failed. Please retry after cleaning up." 1>&2
     exit 2
   fi
 
-  echo "[INFO] Removing downloaded tarball: ${local_tarball}"
+  echo "[INFO] Removing downloaded tarball: ${local_tarball}" 1>&2
   rm -rf "$local_tarball"
 }
 
@@ -126,17 +126,17 @@ install_mvn() {
   if [ -n "$MVN_HOME" ]; then
     MVN_BIN="${MVN_HOME%/}/bin/mvn"
     if [ ! -x "$MVN_BIN" ]; then
-      echo "[WARN] MVN_HOME is set but $MVN_BIN not found or not executable."
+      echo "[WARN] MVN_HOME is set but $MVN_BIN not found or not executable." 1>&2
     else
-      echo "[INFO] Found mvn via MVN_HOME: $MVN_BIN"
+      echo "[INFO] Found mvn via MVN_HOME: $MVN_BIN" 1>&2
     fi
   else
     # Check if Maven is available in PATH
     MVN_BIN="$(command -v mvn || true)"
     if [ -z "$MVN_BIN" ]; then
-      echo "[WARN] No Maven detected, will install required version"
+      echo "[WARN] No Maven detected, will install required version" 1>&2
     else
-      echo "[INFO] Found mvn via PATH: $MVN_BIN"
+      echo "[INFO] Found mvn via PATH: $MVN_BIN" 1>&2
     fi
   fi
 
@@ -152,13 +152,13 @@ install_mvn() {
 
   # If version mismatch, download and install required Maven
   if [ "$(version "$MVN_DETECTED_VERSION")" -ne "$(version "$MVN_REQUIRED_VERSION")" ]; then
-    echo "[WARN] Maven version mismatch:"
-    echo "       Detected: $MVN_DETECTED_VERSION"
-    echo "       Required: $MVN_REQUIRED_VERSION"
-    echo "[INFO] You can:"
-    echo "       1. Set MVN_HOME to point to a correct Maven installation"
-    echo "       2. Let this script download the required version automatically"
-    echo "[INFO] Proceeding with Maven setup..."
+    echo "[WARN] Maven version mismatch:" 1>&2
+    echo "       Detected: $MVN_DETECTED_VERSION" 1>&2
+    echo "       Required: $MVN_REQUIRED_VERSION" 1>&2
+    echo "[INFO] You can:" 1>&2
+    echo "       1. Set MVN_HOME to point to a correct Maven installation" 1>&2
+    echo "       2. Let this script download the required version automatically" 1>&2
+    echo "[INFO] Proceeding with Maven setup..." 1>&2
 
     local APACHE_MIRROR=${APACHE_MIRROR:-'https://www.apache.org/dyn/closer.lua'}
     local MIRROR_URL_QUERY="?action=download"
@@ -194,10 +194,10 @@ export MAVEN_OPTS=${MAVEN_OPTS:-"$_COMPILE_JVM_OPTS"}
 
 # Final validation and Maven execution
 if [ -n "$MVN_BIN" ] && [ -x "$MVN_BIN" ]; then
-  echo "[INFO] Using Maven: $MVN_BIN"
-  "$MVN_BIN" -version
+  echo "[INFO] Using Maven: $MVN_BIN" 1>&2
+  "$MVN_BIN" -version 1>&2
 else
-  echo "[ERROR] No valid Maven installation found or executable is broken. Please try again."
+  echo "[ERROR] No valid Maven installation found or executable is broken. Please try again." 1>&2
   exit 1
 fi
 
