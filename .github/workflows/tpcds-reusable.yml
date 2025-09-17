@@ -230,11 +230,11 @@ jobs:
         id: setup-spark-bin
         if: steps.cache-spark-bin.outputs.cache-hit != 'true'
         run: |
-          SPARK_PATH="spark/spark-${{ steps.get-spark-version.outputs.sparkversion }}"
+          SPARK_PATH="spark/spark-${{ steps.get-dependency-version.outputs.sparkversion }}"
           if [ ${{ inputs.scalaver }} = "2.13" ]; then
             SPARK_FILE="spark-${{ steps.get-dependency-version.outputs.sparkversion }}-bin-${{ inputs.hadoop-profile }}-scala${{ inputs.scalaver }}.tgz"
           else
-            SPARK_FILE="spark-${{ steps.get-spark-version.outputs.sparkversion }}-bin-${{ inputs.hadoop-profile }}.tgz"
+            SPARK_FILE="spark-${{ steps.get-dependency-version.outputs.sparkversion }}-bin-${{ inputs.hadoop-profile }}.tgz"
           fi
           SPARK_URL="${APACHE_MIRROR}/${SPARK_PATH}/${SPARK_FILE}"
           
