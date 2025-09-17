@@ -49,8 +49,6 @@ jobs:
       scalaver: "2.12"
       hadoopver: ${{ matrix.hadoopver }}
       unifflever: ${{ matrix.unifflever }}
-      uniffleurl: https://archive.apache.org/dist/uniffle/${{ matrix.unifflever }}/apache-uniffle-${{ matrix.unifflever }}-incubating-bin.tar.gz
-      hadoopurl: https://archive.apache.org/dist/hadoop/common/hadoop-${{ matrix.hadoopver }}/hadoop-${{ matrix.hadoopver }}.tar.gz
       extrabuildopt: -P${{ matrix.uniffleprofile }} -DuniffleVersion=${{ matrix.unifflever }}
       extraidentifier: uniffle-${{ matrix.unifflever }}
       extrasparkconf: >-
