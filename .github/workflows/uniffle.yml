@@ -19,10 +19,6 @@ name: Uniffle
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-      - branch-*
   pull_request:
     branches:
       - master
