@@ -54,16 +54,6 @@ on:
         required: false
         type: string
         default: ''
-      extrabuildopt:
-        description: 'Optional extra build options for Maven'
-        required: false
-        type: string
-        default: ''
-      extraidentifier:
-        description: 'Optional extra identifier for artifact names'
-        required: false
-        type: string
-        default: ''
       extrasparkconf:
         description: 'Optional extra Spark conf to pass'
         required: false
@@ -123,7 +113,7 @@ jobs:
       - name: Upload TPC-DS Validator
         uses: actions/upload-artifact@v4
         with:
-          name: tpcds-validator-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }}${{ inputs.extraidentifier }}
+          name: tpcds-validator-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }} ${{ inputs.celebornver }} ${{ inputs.unifflever}}
           path: target/tpcds-validator_${{ inputs.scalaver }}-0.1.0-SNAPSHOT-with-dependencies.jar
           overwrite: true
 
@@ -166,12 +156,35 @@ jobs:
         run: |
           sed -i 's/opt-level = 1/opt-level = 0/g' Cargo.toml # use opt-level 0
           rm -f .build-checksum_*.cache
-          ./build/mvn package -Ppre -P${{ inputs.sparkver }} -Pscala-${{ inputs.scalaver }} -Pjdk-${{ inputs.javaver }} ${{ inputs.extrabuildopt }}
+          
+          SPARK_NUMBER="${{ inputs.sparkver }}"
+          SPARK_NUMBER="${SPARK_NUMBER#spark-}"
+          
+          CELEBORN_NUMBER="${{ inputs.celebornver }}"
+          if [ -n "${{ inputs.celebornver }}" ]; then
+            CELEBORN_NUMBER="${CELEBORN_NUMBER#celeborn-}"
+          fi
+          
+          UNIFFLE_NUMBER="${{ inputs.unifflever }}"
+          if [ -n "${{ inputs.unifflever }}" ]; then
+            UNIFFLE_NUMBER="${UNIFFLE_NUMBER#uniffle-}"
+          fi
+          
+          CMD="./auron-build.sh --pre --sparkver $SPARK_NUMBER --scalaver ${{ inputs.scalaver }}"
+          if [ -n "${{ inputs.celebornver }}" ]; then
+            CMD="$CMD --celeborn $CELEBORN_NUMBER"
+          fi
+          if [ -n "${{ inputs.unifflever }}" ]; then
+            CMD="$CMD --uniffle $UNIFFLE_NUMBER"
+          fi
+
+          echo "Running: $CMD"
+          eval $CMD
 
       - name: Upload auron (Spark ${{ inputs.sparkver }}, Scala ${{ inputs.scalaver }}, JDK ${{ inputs.javaver }})
         uses: actions/upload-artifact@v4
         with:
-          name: auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }}${{ inputs.extraidentifier }}
+          name: auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }} ${{ inputs.celebornver }} ${{ inputs.unifflever}}
           path: target/auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-pre-*-SNAPSHOT.jar
           overwrite: true
 
@@ -232,12 +245,12 @@ jobs:
       - name: Download Auron JAR
         uses: actions/download-artifact@v4
         with:
-          name: auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }}${{ inputs.extraidentifier }}
+          name: auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }} ${{ inputs.celebornver }} ${{ inputs.unifflever}}
 
       - name: Download TPC-DS Validator JAR
         uses: actions/download-artifact@v4
         with:
-          name: tpcds-validator-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }}${{ inputs.extraidentifier }}
+          name: tpcds-validator-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }} ${{ inputs.celebornver }} ${{ inputs.unifflever}}
 
       - name: Checkout TPC-DS Data
         uses: actions/checkout@v4
@@ -366,6 +379,6 @@ jobs:
         if: ${{ failure() && (inputs.celebornver != '' || inputs.unifflever != '') }}
         uses: actions/upload-artifact@v4
         with:
-          name: rss-log-${{ inputs.extraidentifier }}
+          name: rss-log-${{ inputs.celebornver }}${{ inputs.unifflever}}
           path: |
             /tmp/rss/logs/*

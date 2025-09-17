@@ -46,8 +46,6 @@ jobs:
     name: Test Celeborn ${{ matrix.celebornver }}
     with:
       celebornver: ${{ matrix.celebornver }}
-      extrabuildopt: -P${{ matrix.celebornprofile }} -DcelebornVersion=${{ matrix.celebornver }}
-      extraidentifier: celeborn-${{ matrix.celebornver }}
       sparkver: "spark-3.5"
       hadoop-profile: 'hadoop3'
       scalaver: "2.12"
