@@ -258,7 +258,6 @@ jobs:
         id: setup-celeborn-bin
         if: ${{ inputs.celebornver != '' && steps.cache-celeborn-bin.outputs.cache-hit != 'true' }}
         run: |
-#         todo: maruilei 这里celeborn和uniffle是不是也可以通过mvn命令，获取到pom中的具体版本？？？
           CELEBORN_PATH="celeborn/celeborn-${{ inputs.celebornver }}"
           CELEBORN_FILE="apache-celeborn-${{ inputs.celebornver }}-bin.tgz"
           CELEBORN_URL="${APACHE_MIRROR}/${CELEBORN_PATH}/${CELEBORN_FILE}${MIRROR_URL_QUERY}"
@@ -295,7 +294,6 @@ jobs:
         id: setup-uniffle-bin
         if: ${{ inputs.unifflever != '' != '' && steps.cache-uniffle-bin.outputs.cache-hit != 'true' }}
         run: |
-#         todo: maruilei 这里celeborn和uniffle是不是也可以通过mvn命令，获取到pom中的具体版本？？？
           UNIFFLE_PATH="uniffle/${{ inputs.unifflever }}"
           UNIFFLE_FILE="apache-uniffle-${{ inputs.unifflever }}-incubating-bin.tar.gz"
           UNIFFLE_URL="${APACHE_MIRROR}/${CELEBORN_PATH}/${CELEBORN_FILE}${MIRROR_URL_QUERY}"
