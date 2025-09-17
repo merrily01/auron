@@ -314,7 +314,6 @@ jobs:
         id: setup-hadoop-bin
         if: ${{ inputs.hadoopver != '' && steps.cache-hadoop-bin.outputs.cache-hit != 'true' }}
         run: |
-#         https://archive.apache.org/dist/hadoop/common/hadoop-${{ matrix.hadoopver }}/hadoop-${{ matrix.hadoopver }}.tar.gz
           HADOOP_PATH="hadoop/common/hadoop-${{ inputs.hadoopver }}"
           HADOOP_FILE="hadoop-${{ inputs.hadoopver }}.tar.gz"
           HADOOP_URL="${APACHE_MIRROR}/${HADOOP_PATH}/${HADOOP_FILE}${MIRROR_URL_QUERY}"
