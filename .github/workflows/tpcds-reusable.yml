@@ -172,7 +172,9 @@ jobs:
           if [ -n "${{ inputs.unifflever }}" ]; then
             UNIFFLE_NUMBER="${UNIFFLE_NUMBER#uniffle-}"
           fi
-          
+          echo "Using JAVA_HOME=$JAVA_HOME"
+          java -version  
+
           CMD="./auron-build.sh --pre --sparkver $SPARK_NUMBER --scalaver ${{ inputs.scalaver }}"
           if [ -n "${{ inputs.celebornver }}" ]; then
             CMD="$CMD --celeborn $CELEBORN_NUMBER"
