@@ -52,6 +52,9 @@ public enum AuronConf {
     // TypedImperativeAggregate one row mem use size
     UDAF_FALLBACK_ESTIM_ROW_SIZE("spark.auron.udafFallback.typedImperativeEstimatedRowSize", 256),
 
+    /// enable trimming string inputs before casting to numeric/boolean types
+    CAST_STRING_TRIM_ENABLE("spark.auron.cast.trimString", true),
+
     /// ignore corrupted input files
     IGNORE_CORRUPTED_FILES("spark.files.ignoreCorruptFiles", false),
 
