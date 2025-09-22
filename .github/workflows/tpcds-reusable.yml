@@ -79,6 +79,7 @@ on:
 
 env:
   APACHE_MIRROR: "https://archive.apache.org/dist"
+  WGET_OPTS: "--tries=3 --timeout=30 -c"
 
 jobs:
   build-validator:
@@ -182,7 +183,7 @@ jobs:
           fi
 
           echo "Running: $CMD"
-          eval $CMD
+          exec $CMD
 
       - name: Upload auron (Spark ${{ inputs.sparkver }}, Scala ${{ inputs.scalaver }}, JDK ${{ inputs.javaver }})
         uses: actions/upload-artifact@v4
@@ -244,7 +245,7 @@ jobs:
           fi
           SPARK_URL="${APACHE_MIRROR}/${SPARK_PATH}/${SPARK_FILE}"
           
-          wget -c ${SPARK_URL}
+          wget ${WGET_OPTS} ${SPARK_URL}
           mkdir -p spark-bin-${{ inputs.sparkver }}_${{ inputs.scalaver }}
           cd spark-bin-${{ inputs.sparkver }}_${{ inputs.scalaver }} && tar -xf ../spark-*.tgz --strip-component=1
 
@@ -298,7 +299,7 @@ jobs:
           CELEBORN_FILE="apache-celeborn-${{ steps.get-dependency-version.outputs.celebornversion }}-bin.tgz"
           CELEBORN_URL="${APACHE_MIRROR}/${CELEBORN_PATH}/${CELEBORN_FILE}"
           
-          wget -c ${CELEBORN_URL} && \
+          wget ${WGET_OPTS} ${CELEBORN_URL} && \
           mkdir -p celeborn-bin-${{ steps.get-dependency-version.outputs.celebornversion }} && \
           cd celeborn-bin-${{ steps.get-dependency-version.outputs.celebornversion }} && tar -xf ../apache-celeborn-*.tgz --strip-component=1
 
@@ -334,7 +335,7 @@ jobs:
           UNIFFLE_FILE="apache-uniffle-${{ steps.get-dependency-version.outputs.uniffleversion }}-incubating-bin.tar.gz"
           UNIFFLE_URL="${APACHE_MIRROR}/${UNIFFLE_PATH}/${UNIFFLE_FILE}"
 
-          wget -c ${UNIFFLE_URL} && \
+          wget ${WGET_OPTS} ${UNIFFLE_URL} && \
           mkdir -p uniffle-bin-${{ steps.get-dependency-version.outputs.uniffleversion }} && \
           tar -xf ./${UNIFFLE_FILE} -C uniffle-bin-${{ steps.get-dependency-version.outputs.uniffleversion }} --strip-component=1
 
@@ -354,7 +355,7 @@ jobs:
           HADOOP_FILE="hadoop-${{ inputs.hadoopver }}.tar.gz"
           HADOOP_URL="${APACHE_MIRROR}/${HADOOP_PATH}/${HADOOP_FILE}"
           
-          wget -c ${HADOOP_URL} && \
+          wget ${WGET_OPTS} ${HADOOP_URL} && \
           mkdir -p hadoop-bin-${{ inputs.hadoopver }} && \
           tar -xf ./$HADOOP_FILE -C hadoop-bin-${{ inputs.hadoopver }} --strip-component=1  && \
           ls -la hadoop-bin-${{ inputs.hadoopver }}
