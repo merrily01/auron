@@ -39,9 +39,7 @@ jobs:
       matrix:
         include:
           - celebornver: "celeborn-0.6"
-            celebornprofile: "celeborn,celeborn-0.6"
           - celebornver: "celeborn-0.5"
-            celebornprofile: "celeborn,celeborn-0.5"
     uses: ./.github/workflows/tpcds-reusable.yml
     name: Test Celeborn ${{ matrix.celebornver }}
     with:

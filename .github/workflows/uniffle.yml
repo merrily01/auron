@@ -40,7 +40,6 @@ jobs:
         include:
           - unifflever: "uniffle-0.9"
             hadoopver: "2.8.5"
-            uniffleprofile: "uniffle,uniffle-0.9"
     uses: ./.github/workflows/tpcds-reusable.yml
     name: Test Uniffle ${{ matrix.unifflever }}
     with:
