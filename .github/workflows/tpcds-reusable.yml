@@ -214,13 +214,13 @@ jobs:
           echo "Detected Spark VERSION: $SPARK_VERSION"
           echo "sparkversion=$SPARK_VERSION" >> $GITHUB_OUTPUT
 
-          if [ ${{ inputs.celebornver }} != '' ]; then
+          if [ -n "${{ inputs.celebornver }}" ]; then
             CELEBORN_VERSION=$(./build/mvn help:evaluate -N -Dexpression=celebornVersion -P${{ inputs.sparkver }} -P${{ inputs.celebornver }} -q -DforceStdout)
             echo "Detected Celeborn VERSION: $CELEBORN_VERSION"
             echo "celebornversion=$CELEBORN_VERSION" >> $GITHUB_OUTPUT
           fi
 
-          if [ ${{ inputs.unifflever }} != '' ]; then
+          if [ -n "${{ inputs.unifflever }}" ]; then
             UNIFFLE_VERSION=$(./build/mvn help:evaluate -N -Dexpression=uniffleVersion -P${{ inputs.sparkver }} -P${{ inputs.unifflever }} -q -DforceStdout)
             echo "Detected Uniffle VERSION: $UNIFFLE_VERSION"
             echo "uniffleversion=$UNIFFLE_VERSION" >> $GITHUB_OUTPUT
