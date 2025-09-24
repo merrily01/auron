@@ -192,7 +192,7 @@ jobs:
             auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-jdk-${{ inputs.javaver }}
             ${{ inputs.celebornver && format('-{0}', inputs.celebornver) || '' }}
             ${{ inputs.unifflever && format('-{0}', inputs.unifflever) || '' }}
-          path: target/auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-pre-*-SNAPSHOT.jar
+          path: target/auron-${{ inputs.sparkver }}_${{ inputs.scalaver }}-pre-*.jar
           overwrite: true
 
   run-tpcds-test:
