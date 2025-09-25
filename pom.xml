@@ -676,16 +676,6 @@
     </profile>
 
     <profile>
-      <id>celeborn</id>
-    </profile>
-    <profile>
-      <id>uniffle</id>
-    </profile>
-    <profile>
-      <id>paimon</id>
-    </profile>
-
-    <profile>
       <id>celeborn-0.5</id>
       <modules>
         <module>thirdparty/auron-celeborn-0.5</module>
