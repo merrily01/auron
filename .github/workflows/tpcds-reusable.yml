@@ -332,7 +332,7 @@ jobs:
         if: ${{ inputs.unifflever != '' && steps.cache-uniffle-bin.outputs.cache-hit != 'true' }}
         run: |
           UNIFFLE_PATH="uniffle/${{ steps.get-dependency-version.outputs.uniffleversion }}"
-          UNIFFLE_FILE="apache-uniffle-${{ steps.get-dependency-version.outputs.uniffleversion }}-incubating-bin.tar.gz"
+          UNIFFLE_FILE="apache-uniffle-${{ steps.get-dependency-version.outputs.uniffleversion }}-bin.tar.gz"
           UNIFFLE_URL="${APACHE_MIRROR}/${UNIFFLE_PATH}/${UNIFFLE_FILE}"
 
           wget ${WGET_OPTS} ${UNIFFLE_URL} && \
