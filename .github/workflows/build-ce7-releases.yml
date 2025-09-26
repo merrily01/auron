@@ -79,7 +79,7 @@ jobs:
 
       - name: Cache auron-${{ matrix.sparkver }}_${{ matrix.scalaver }}
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: target-docker/auron-${{matrix.sparkver}}_${{matrix.scalaver}}-release-${{ env.osclassfier }}-${{ matrix.auronver }}.jar
           key: auron-${{matrix.sparkver}}_${{matrix.scalaver}}-release-${{ env.osclassfier }}-${{ matrix.auronver }}.jar
