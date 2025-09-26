@@ -623,13 +623,13 @@ impl<'a> JniBridge<'a> {
             method_openFileAsDataInputWrapper: env.get_static_method_id(
                 class,
                 "openFileAsDataInputWrapper",
-                "(Lorg/apache/hadoop/fs/FileSystem;Ljava/lang/String;)Lorg/apache/spark/auron/FSDataInputWrapper;",
+                "(Lorg/apache/hadoop/fs/FileSystem;Ljava/lang/String;)Lorg/apache/auron/hadoop/fs/FSDataInputWrapper;",
             )?,
             method_openFileAsDataInputWrapper_ret: ReturnType::Object,
             method_createFileAsDataOutputWrapper: env.get_static_method_id(
                 class,
                 "createFileAsDataOutputWrapper",
-                "(Lorg/apache/hadoop/fs/FileSystem;Ljava/lang/String;)Lorg/apache/spark/auron/FSDataOutputWrapper;",
+                "(Lorg/apache/hadoop/fs/FileSystem;Ljava/lang/String;)Lorg/apache/auron/hadoop/fs/FSDataOutputWrapper;",
             )?,
             method_createFileAsDataOutputWrapper_ret: ReturnType::Object,
             method_isDriverSide_ret: ReturnType::Primitive(Primitive::Boolean),
@@ -1583,7 +1583,7 @@ pub struct AuronFSDataInputWrapper<'a> {
 }
 
 impl<'a> AuronFSDataInputWrapper<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/auron/FSDataInputWrapper";
+    pub const SIG_TYPE: &'static str = "org/apache/auron/hadoop/fs/FSDataInputWrapper";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<AuronFSDataInputWrapper<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
@@ -1603,7 +1603,7 @@ pub struct AuronFSDataOutputWrapper<'a> {
 }
 
 impl<'a> AuronFSDataOutputWrapper<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/auron/FSDataOutputWrapper";
+    pub const SIG_TYPE: &'static str = "org/apache/auron/hadoop/fs/FSDataOutputWrapper";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<AuronFSDataOutputWrapper<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
