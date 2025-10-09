@@ -133,6 +133,8 @@ object AuronConverters extends Logging {
     getBooleanConf("spark.auron.enable.scan.parquet", defaultValue = true)
   def enableScanOrc: Boolean =
     getBooleanConf("spark.auron.enable.scan.orc", defaultValue = true)
+  def enableBroadcastExchange: Boolean =
+    getBooleanConf("spark.auron.enable.broadcastExchange", defaultValue = true)
 
   private val extConvertProviders = ServiceLoader.load(classOf[AuronConvertProvider]).asScala
   def extConvertSupported(exec: SparkPlan): Boolean = {
@@ -173,7 +175,8 @@ object AuronConverters extends Logging {
   def convertSparkPlan(exec: SparkPlan): SparkPlan = {
     exec match {
       case e: ShuffleExchangeExec => tryConvert(e, convertShuffleExchangeExec)
-      case e: BroadcastExchangeExec => tryConvert(e, convertBroadcastExchangeExec)
+      case e: BroadcastExchangeExec if enableBroadcastExchange =>
+        tryConvert(e, convertBroadcastExchangeExec)
       case e: FileSourceScanExec if enableScan => // scan
         tryConvert(e, convertFileSourceScanExec)
       case e: ProjectExec if enableProject => // project
