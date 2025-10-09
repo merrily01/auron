@@ -100,6 +100,14 @@ while [[ $# -gt 0 ]]; do
         --sparkver)
             if [[ -n "$2" && "$2" != -* ]]; then
                 SPARK_VER="$2"
+                if [ "$SPARK_VER" = "3.0" ] || [ "$SPARK_VER" = "3.1" ] \
+                  || [ "$SPARK_VER" = "3.2" ] || [ "$SPARK_VER" = "3.3" ] \
+                  || [ "$SPARK_VER" = "3.4" ] || [ "$SPARK_VER" = "3.5" ]; then
+                  echo "Building for Spark $SPARK_VER"
+                else
+                  echo "ERROR: Invalid Spark version: $SPARK_VER. The currently supported versions are: 3.0 / 3.1 / 3.2 / 3.3 / 3.4 / 3.5."
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --sparkver requires version argument" >&2
@@ -109,6 +117,12 @@ while [[ $# -gt 0 ]]; do
         --scalaver)
             if [[ -n "$2" && "$2" != -* ]]; then
                 SCALA_VER="$2"
+                if [ "$SCALA_VER" = "2.12" ] || [ "$SCALA_VER" = "2.13" ]; then
+                  echo "Building scala version: $SCALA_VER"
+                else
+                  echo "ERROR: Invalid scala version: $SCALA_VER. The currently supported versions are: 2.12 / 2.13."
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --scalaver requires version argument" >&2
@@ -118,6 +132,12 @@ while [[ $# -gt 0 ]]; do
         --celeborn)
             if [[ -n "$2" && "$2" != -* ]]; then
                 CELEBORN_VER="$2"
+                if [ "$CELEBORN_VER" = "0.5" ] || [ "$CELEBORN_VER" = "0.6" ]; then
+                  echo "Building Celeborn version: $CELEBORN_VER"
+                else
+                  echo "ERROR: Invalid Celeborn version: $CELEBORN_VER. The currently supported versions are: 0.5 / 0.6."
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --celeborn requires version argument" >&2
@@ -127,6 +147,12 @@ while [[ $# -gt 0 ]]; do
         --uniffle)
             if [[ -n "$2" && "$2" != -* ]]; then
                 UNIFFLE_VER="$2"
+                if [ "$UNIFFLE_VER" = "0.10" ] ; then
+                  echo "Building Uniffle version: $UNIFFLE_VER"
+                else
+                  echo "ERROR: Invalid Uniffle version: $UNIFFLE_VER. The currently supported version is: 0.10."
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --uniffle requires version argument" >&2
@@ -136,6 +162,12 @@ while [[ $# -gt 0 ]]; do
         --paimon)
             if [[ -n "$2" && "$2" != -* ]]; then
                 PAIMON_VER="$2"
+                if [ "$PAIMON_VER" = "1.2" ] ; then
+                  echo "Building Paimon version: $PAIMON_VER"
+                else
+                  echo "ERROR: Invalid Paimon version: $PAIMON_VER. The currently supported version is: 1.2."
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --paimon requires version argument" >&2
@@ -145,6 +177,12 @@ while [[ $# -gt 0 ]]; do
         --flink)
             if [[ -n "$2" && "$2" != -* ]]; then
                 FLINK_VER="$2"
+                if [ "$FLINK_VER" = "1.18" ] ; then
+                  echo "Building Flink version: $FLINK_VER"
+                else
+                  echo "ERROR: Invalid Flink version: $FLINK_VER. The currently supported version is: 1.18"
+                  exit 1
+                fi
                 shift 2
             else
                 echo "ERROR: --flink requires version argument" >&2
