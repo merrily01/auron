@@ -648,15 +648,11 @@ object AuronConverters extends Logging {
     }
   }
 
-  def convertBroadcastExchangeExec(exec: SparkPlan): SparkPlan = {
-    exec match {
-      case exec: BroadcastExchangeExec =>
-        logDebugPlanConversion(exec, Seq("mode" -> exec.mode))
-        val converted = Shims.get.createNativeBroadcastExchangeExec(exec.mode, exec.child)
-        converted.setTagValue(NativeBroadcastExchangeBase.nativeExecutionTag, true)
-        return converted
-    }
-    exec
+  def convertBroadcastExchangeExec(exec: BroadcastExchangeExec): SparkPlan = {
+    logDebugPlanConversion(exec, Seq("mode" -> exec.mode))
+    val converted = Shims.get.createNativeBroadcastExchangeExec(exec.mode, exec.child)
+    converted.setTagValue(NativeBroadcastExchangeBase.nativeExecutionTag, true)
+    converted
   }
 
   def convertLocalLimitExec(exec: LocalLimitExec): SparkPlan = {
