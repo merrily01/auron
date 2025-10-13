@@ -297,7 +297,7 @@ BUILD_INFO_FILE="common/src/main/resources/auron-build-info.properties"
 mkdir -p "$(dirname "$BUILD_INFO_FILE")"
 
 JAVA_VERSION=$(java -version 2>&1 | head -n 1 | awk '{print $3}' | tr -d '"')
-PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='properties']/*[local-name()='project.version']/text()" pom.xml)
+PROJECT_VERSION=$(./build/mvn help:evaluate -N -Dexpression=project.version -Pspark-${SPARK_VER} -q -DforceStdout)
 RUST_VERSION=$(rustc --version | awk '{print $2}')
 
 {
