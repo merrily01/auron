@@ -314,6 +314,8 @@ RUST_VERSION=$(rustc --version | awk '{print $2}')
 } > "$BUILD_INFO_FILE"
 
 echo "[INFO] Build info written to $BUILD_INFO_FILE"
+echo "[INFO] ------------------ Build Configuration Summary ------------------"
+cat "$BUILD_INFO_FILE"
 
 # Execute Maven command
 if [[ "$USE_DOCKER" == true ]]; then
