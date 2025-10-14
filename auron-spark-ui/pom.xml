@@ -27,6 +27,8 @@
 
   <artifactId>auron-spark-ui_${scalaVersion}</artifactId>
   <packaging>jar</packaging>
+  <name>Apache Auron Spark UI ${scalaVersion}</name>
+  <description>Apache Auron Spark UI Project</description>
 
   <dependencies>
     <dependency>
