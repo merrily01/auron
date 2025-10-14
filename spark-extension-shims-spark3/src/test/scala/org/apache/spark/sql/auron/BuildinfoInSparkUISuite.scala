@@ -16,8 +16,6 @@
  */
 package org.apache.spark.sql.auron
 
-import java.io.File
-
 import org.apache.spark.sql.execution.ui.AuronSQLAppStatusListener
 import org.apache.spark.util.Utils
 
