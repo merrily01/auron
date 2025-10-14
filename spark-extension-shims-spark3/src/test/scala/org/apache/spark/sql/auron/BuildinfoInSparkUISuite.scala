@@ -16,12 +16,20 @@
  */
 package org.apache.spark.sql.auron
 
+import java.io.File
+
 import org.apache.spark.sql.execution.ui.AuronSQLAppStatusListener
+import org.apache.spark.util.Utils
 
 class BuildinfoInSparkUISuite
     extends org.apache.spark.sql.QueryTest
     with BuildInfoAuronSQLSuite
     with AuronSQLTestHelper {
+
+  override protected def beforeAll(): Unit = {
+    super.beforeAll()
+    val eventLogDir = Utils.createTempDir("/tmp/spark-events")
+  }
 
   test("test build info in spark UI ") {
     val listeners = spark.sparkContext.listenerBus.findListenersByClass[AuronSQLAppStatusListener]
@@ -29,5 +37,4 @@ class BuildinfoInSparkUISuite
     val listener = listeners(0)
     assert(listener.getAuronBuildInfo() == 1)
   }
-
 }
