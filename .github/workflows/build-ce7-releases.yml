@@ -94,7 +94,8 @@ jobs:
           --scalaver ${{ matrix.scalaver }} \
           --celeborn 0.5 \
           --uniffle 0.10 \
-          --paimon 1.2
+          --paimon 1.2 \
+          --flink 1.18 \
 
       - name: Upload auron-${{ matrix.sparkver }}_${{ matrix.scalaver }}
         uses: actions/upload-artifact@v4
