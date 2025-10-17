@@ -19,6 +19,9 @@ name: Auron UT Validation
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main, release-* ]
+  pull_request:
 
 jobs:
   unit-tests:
