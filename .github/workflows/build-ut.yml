@@ -33,7 +33,7 @@ jobs:
           - name: Spark 3.5 UT
             scala: 2.13
             spark: 3.5
-            module: auron-spark-extension
+            module: spark-extension
             profiles: "-Pscala-2.13 -Pspark-3.5 -Prelease"
 
           # Spark 3.4 UT (Scala 2.12)
