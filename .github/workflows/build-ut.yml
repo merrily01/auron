@@ -1,0 +1,77 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Auron UT Validation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # Spark 3.5 UT (Scala 2.13)
+          - name: Spark 3.5 UT
+            scala: 2.13
+            spark: 3.5
+            module: auron-spark-extension
+            profiles: "-Pscala-2.13 -Pspark-3.5 -Prelease"
+
+          # Spark 3.4 UT (Scala 2.12)
+          - name: Spark 3.4 UT
+            scala: 2.12
+            spark: 3.4
+            module: auron-spark-extension
+            profiles: "-Pscala-2.12 -Pspark-3.4 -Prelease"
+
+          # Flink UT (Scala 2.12 only)
+          - name: Flink 1.18 UT
+            scala: 2.12
+            flink: 1.18
+            module: auron-flink-extension
+            profiles: "-Pscala-2.12 -Pflink-1.18 -Prelease"
+
+          # Celeborn UT (Scala 2.13)
+          - name: Celeborn UT
+            scala: 2.13
+            spark: 3.5
+            module: auron-celeborn-extension
+            profiles: "-Pscala-2.13 -Pspark-3.5 -Prelease"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: temurin
+
+      - name: Build and Test ${{ matrix.name }}
+        run: |
+          ./build/mvn -B clean test -pl ${{ matrix.module }} -am ${{ matrix.profiles }}
+
+      - name: Upload test reports (optional)
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports-${{ matrix.name }}
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/failsafe-reports/*.xml
