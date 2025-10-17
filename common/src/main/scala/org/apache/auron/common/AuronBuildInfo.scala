@@ -40,16 +40,16 @@ object AuronBuildInfo {
     Try(buildFileStream.close())
   }
 
-  val VERSION_STRING: String = "PROJECT VERSION"
-  val JAVA_COMPILE_VERSION_STRING: String = "JAVA VERSION"
-  val SCALA_COMPILE_VERSION_STRING: String = "SCALA VERSION"
-  val SPARK_COMPILE_VERSION_STRING: String = "SPARK VERSION"
-  val RUST_COMPILE_VERSION_STRING: String = "RUST VERSION"
-  val CELEBORN_VERSION_STRING: String = "CELEBRON VERSION"
-  val UNIFFLE_VERSION_STRING: String = "UNIFFLE VERSION"
-  val PAIMON_VERSION_STRING: String = "PAIMON VERSION"
-  val FLINK_VERSION_STRING: String = "FLINK VERSION"
-  val BUILD_DATE_STRING: String = "BUILD TIMESTAMP"
+  val VERSION_STRING: String = "Auron Version"
+  val JAVA_COMPILE_VERSION_STRING: String = "Java Version"
+  val SCALA_COMPILE_VERSION_STRING: String = "Scala Version"
+  val RUST_COMPILE_VERSION_STRING: String = "Rust Version"
+  val SPARK_COMPILE_VERSION_STRING: String = "Spark Version"
+  val FLINK_VERSION_STRING: String = "Flink Version"
+  val CELEBORN_VERSION_STRING: String = "Celeborn Version"
+  val UNIFFLE_VERSION_STRING: String = "Uniffle Version"
+  val PAIMON_VERSION_STRING: String = "Paimon Version"
+  val BUILD_DATE_STRING: String = "Build Timestamp"
 
   val VERSION: String = props.getProperty("project.version", unknown)
   val JAVA_COMPILE_VERSION: String = props.getProperty("java.version", unknown)
