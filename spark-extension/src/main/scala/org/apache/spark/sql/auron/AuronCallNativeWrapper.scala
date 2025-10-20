@@ -44,6 +44,7 @@ import org.apache.spark.util.CompletionIterator
 import org.apache.spark.util.ShutdownHookManager
 import org.apache.spark.util.Utils
 
+import org.apache.auron.metric.{MetricNode, SparkMetricNode}
 import org.apache.auron.protobuf.PartitionId
 import org.apache.auron.protobuf.PhysicalPlanNode
 import org.apache.auron.protobuf.TaskDefinition
@@ -52,7 +53,7 @@ case class AuronCallNativeWrapper(
     nativePlan: PhysicalPlanNode,
     partition: Partition,
     context: Option[TaskContext],
-    metrics: MetricNode)
+    metrics: SparkMetricNode)
     extends Logging {
 
   AuronCallNativeWrapper.initNative()
