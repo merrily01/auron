@@ -115,7 +115,7 @@ MVN_CMD="$(dirname "$0")/build/mvn"
 #   Initialize basic variables and default options for the build
 # -----------------------------------------------------------------------------
 USE_DOCKER=false
-IMAGE_NAME="${SUPPORTED_OS_IMAGES[*]:0:1})"
+IMAGE_NAME="${SUPPORTED_OS_IMAGES[*]:0:1}"
 PRE_PROFILE=false
 RELEASE_PROFILE=false
 CLEAN=true
