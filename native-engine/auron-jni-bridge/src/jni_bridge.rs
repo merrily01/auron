@@ -611,7 +611,7 @@ impl<'a> JniBridge<'a> {
             method_getTaskOnHeapSpillManager: env.get_static_method_id(
                 class,
                 "getTaskOnHeapSpillManager",
-                "()Lorg/apache/spark/sql/auron/memory/OnHeapSpillManager;",
+                "()Lorg/apache/auron/memory/OnHeapSpillManager;",
             )?,
             method_getTaskOnHeapSpillManager_ret: ReturnType::Object,
             method_isTaskRunning: env.get_static_method_id(class, "isTaskRunning", "()Z")?,
@@ -1455,7 +1455,7 @@ pub struct AuronOnHeapSpillManager<'a> {
     pub method_releaseSpill_ret: ReturnType,
 }
 impl<'a> AuronOnHeapSpillManager<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/memory/OnHeapSpillManager";
+    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/memory/SparkOnHeapSpillManager";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<AuronOnHeapSpillManager<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
