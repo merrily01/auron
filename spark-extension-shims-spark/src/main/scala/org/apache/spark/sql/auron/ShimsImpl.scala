@@ -685,7 +685,7 @@ class ShimsImpl extends Shims with Logging {
 
             // store fetch iterator in jni resource before native compute
             val jniResourceId = s"NativeShuffleReadExec:${UUID.randomUUID().toString}"
-            JniBridge.resourcesMap.put(
+            org.apache.auron.jni.JniBridge.putResource(
               jniResourceId,
               () => {
                 reader.asInstanceOf[AuronBlockStoreShuffleReaderBase[_, _]].readIpc()
@@ -778,7 +778,7 @@ class ShimsImpl extends Shims with Logging {
 
             // store fetch iterator in jni resource before native compute
             val jniResourceId = s"NativeShuffleReadExec:${UUID.randomUUID().toString}"
-            JniBridge.resourcesMap.put(
+            org.apache.auron.jni.JniBridge.putResource(
               jniResourceId,
               () => {
                 reader.asInstanceOf[AuronBlockStoreShuffleReaderBase[_, _]].readIpc()
@@ -871,7 +871,7 @@ class ShimsImpl extends Shims with Logging {
 
             // store fetch iterator in jni resource before native compute
             val jniResourceId = s"NativeShuffleReadExec:${UUID.randomUUID().toString}"
-            JniBridge.resourcesMap.put(
+            org.apache.auron.jni.JniBridge.putResource(
               jniResourceId,
               () => {
                 reader.asInstanceOf[AuronBlockStoreShuffleReaderBase[_, _]].readIpc()

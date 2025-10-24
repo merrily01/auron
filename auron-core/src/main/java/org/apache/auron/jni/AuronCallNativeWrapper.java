@@ -106,6 +106,7 @@ public class AuronCallNativeWrapper {
      * @throws RuntimeException If the native runtime encounters an error during batch processing.
      */
     public boolean loadNextBatch(Consumer<VectorSchemaRoot> batchConsumer) {
+        checkError();
         // load next batch
         try {
             this.batchConsumer = batchConsumer;
@@ -130,6 +131,10 @@ public class AuronCallNativeWrapper {
         try (ArrowSchema ffiSchema = ArrowSchema.wrap(ffiSchemaPtr)) {
             arrowSchema = Data.importSchema(arrowAllocator, ffiSchema, dictionaryProvider);
         }
+    }
+
+    public Schema getArrowSchema() {
+        return arrowSchema;
     }
 
     protected void importBatch(long ffiArrayPtr) {
@@ -172,15 +177,11 @@ public class AuronCallNativeWrapper {
         return taskDefinition.toByteArray();
     }
 
-    private synchronized void close() {
+    public synchronized void close() {
         if (nativeRuntimePtr != 0) {
             JniBridge.finalizeNative(nativeRuntimePtr);
             nativeRuntimePtr = 0;
-            try {
-                dictionaryProvider.close();
-            } catch (Exception e) {
-                LOG.error("Error closing dictionary provider", e);
-            }
+            dictionaryProvider.close();
             checkError();
         }
     }
