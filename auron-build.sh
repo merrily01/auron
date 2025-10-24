@@ -116,6 +116,7 @@ MVN_CMD="$(dirname "$0")/build/mvn"
 # -----------------------------------------------------------------------------
 USE_DOCKER=false
 IMAGE_NAME="${SUPPORTED_OS_IMAGES[*]:0:1}"
+echo "Using default image: $IMAGE_NAME"
 PRE_PROFILE=false
 RELEASE_PROFILE=false
 CLEAN=true
