@@ -33,6 +33,11 @@ import org.apache.auron.protobuf.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A wrapper class for calling native functions in the Auron project.
+ * It handles initialization, loading data batches, and error handling.
+ * Provides methods to interact with the native execution runtime and process data batches.
+ */
 public class AuronCallNativeWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuronCallNativeWrapper.class);
@@ -106,6 +111,7 @@ public class AuronCallNativeWrapper {
      * @throws RuntimeException If the native runtime encounters an error during batch processing.
      */
     public boolean loadNextBatch(Consumer<VectorSchemaRoot> batchConsumer) {
+        checkError();
         // load next batch
         try {
             this.batchConsumer = batchConsumer;
@@ -130,6 +136,10 @@ public class AuronCallNativeWrapper {
         try (ArrowSchema ffiSchema = ArrowSchema.wrap(ffiSchemaPtr)) {
             arrowSchema = Data.importSchema(arrowAllocator, ffiSchema, dictionaryProvider);
         }
+    }
+
+    public Schema getArrowSchema() {
+        return arrowSchema;
     }
 
     protected void importBatch(long ffiArrayPtr) {
@@ -172,15 +182,11 @@ public class AuronCallNativeWrapper {
         return taskDefinition.toByteArray();
     }
 
-    private synchronized void close() {
+    public synchronized void close() {
         if (nativeRuntimePtr != 0) {
             JniBridge.finalizeNative(nativeRuntimePtr);
             nativeRuntimePtr = 0;
-            try {
-                dictionaryProvider.close();
-            } catch (Exception e) {
-                LOG.error("Error closing dictionary provider", e);
-            }
+            dictionaryProvider.close();
             checkError();
         }
     }

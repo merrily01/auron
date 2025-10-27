@@ -553,18 +553,16 @@ pub struct JniBridge<'a> {
     pub method_getContextClassLoader_ret: ReturnType,
     pub method_setContextClassLoader: JStaticMethodID,
     pub method_setContextClassLoader_ret: ReturnType,
-    pub method_getSparkEnvConfAsString: JStaticMethodID,
-    pub method_getSparkEnvConfAsString_ret: ReturnType,
     pub method_getResource: JStaticMethodID,
     pub method_getResource_ret: ReturnType,
-    pub method_getTaskContext: JStaticMethodID,
-    pub method_getTaskContext_ret: ReturnType,
+    pub method_getThreadContext: JStaticMethodID,
+    pub method_getThreadContext_ret: ReturnType,
+    pub method_setThreadContext: JStaticMethodID,
+    pub method_setThreadContext_ret: ReturnType,
     pub method_getTaskOnHeapSpillManager: JStaticMethodID,
     pub method_getTaskOnHeapSpillManager_ret: ReturnType,
     pub method_isTaskRunning: JStaticMethodID,
     pub method_isTaskRunning_ret: ReturnType,
-    pub method_isDriverSide: JStaticMethodID,
-    pub method_isDriverSide_ret: ReturnType,
     pub method_openFileAsDataInputWrapper: JStaticMethodID,
     pub method_openFileAsDataInputWrapper_ret: ReturnType,
     pub method_createFileAsDataOutputWrapper: JStaticMethodID,
@@ -575,14 +573,12 @@ pub struct JniBridge<'a> {
     pub method_getTotalMemoryLimited_ret: ReturnType,
     pub method_getDirectWriteSpillToDiskFile: JStaticMethodID,
     pub method_getDirectWriteSpillToDiskFile_ret: ReturnType,
-    pub method_initNativeThread: JStaticMethodID,
-    pub method_initNativeThread_ret: ReturnType,
 
     pub method_getAuronUDFWrapperContext: JStaticMethodID,
     pub method_getAuronUDFWrapperContext_ret: ReturnType,
 }
 impl<'a> JniBridge<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/JniBridge";
+    pub const SIG_TYPE: &'static str = "org/apache/auron/jni/JniBridge";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<JniBridge<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
@@ -600,33 +596,32 @@ impl<'a> JniBridge<'a> {
                 "(Ljava/lang/ClassLoader;)V",
             )?,
             method_setContextClassLoader_ret: ReturnType::Primitive(Primitive::Void),
-            method_getSparkEnvConfAsString: env.get_static_method_id(
-                class,
-                "getSparkEnvConfAsString",
-                "(Ljava/lang/String;)Ljava/lang/String;",
-            )?,
-            method_getSparkEnvConfAsString_ret: ReturnType::Object,
             method_getResource: env.get_static_method_id(
                 class,
                 "getResource",
                 "(Ljava/lang/String;)Ljava/lang/Object;",
             )?,
             method_getResource_ret: ReturnType::Object,
-            method_getTaskContext: env.get_static_method_id(
+            method_getThreadContext: env.get_static_method_id(
                 class,
-                "getTaskContext",
-                "()Lorg/apache/spark/TaskContext;",
+                "getThreadContext",
+                "()Ljava/lang/Object;",
             )?,
-            method_getTaskContext_ret: ReturnType::Object,
+            method_getThreadContext_ret: ReturnType::Object,
+            method_setThreadContext: env.get_static_method_id(
+                class,
+                "setThreadContext",
+                "(Ljava/lang/Object;)V",
+            )?,
+            method_setThreadContext_ret: ReturnType::Primitive(Primitive::Void),
             method_getTaskOnHeapSpillManager: env.get_static_method_id(
                 class,
                 "getTaskOnHeapSpillManager",
-                "()Lorg/apache/spark/sql/auron/memory/OnHeapSpillManager;",
+                "()Lorg/apache/auron/memory/OnHeapSpillManager;",
             )?,
             method_getTaskOnHeapSpillManager_ret: ReturnType::Object,
             method_isTaskRunning: env.get_static_method_id(class, "isTaskRunning", "()Z")?,
             method_isTaskRunning_ret: ReturnType::Primitive(Primitive::Boolean),
-            method_isDriverSide: env.get_static_method_id(class, "isDriverSide", "()Z")?,
             method_openFileAsDataInputWrapper: env.get_static_method_id(
                 class,
                 "openFileAsDataInputWrapper",
@@ -639,7 +634,6 @@ impl<'a> JniBridge<'a> {
                 "(Lorg/apache/hadoop/fs/FileSystem;Ljava/lang/String;)Lorg/apache/auron/hadoop/fs/FSDataOutputWrapper;",
             )?,
             method_createFileAsDataOutputWrapper_ret: ReturnType::Object,
-            method_isDriverSide_ret: ReturnType::Primitive(Primitive::Boolean),
             method_getDirectMemoryUsed: env.get_static_method_id(
                 class,
                 "getDirectMemoryUsed",
@@ -658,12 +652,6 @@ impl<'a> JniBridge<'a> {
                 "()Ljava/lang/String;",
             )?,
             method_getDirectWriteSpillToDiskFile_ret: ReturnType::Object,
-            method_initNativeThread: env.get_static_method_id(
-                class,
-                "initNativeThread",
-                "(Ljava/lang/ClassLoader;Lorg/apache/spark/TaskContext;)V",
-            )?,
-            method_initNativeThread_ret: ReturnType::Primitive(Primitive::Void),
 
             method_getAuronUDFWrapperContext: env.get_static_method_id(
                 class,
@@ -1420,7 +1408,7 @@ pub struct AuronCallNativeWrapper<'a> {
     pub method_setError_ret: ReturnType,
 }
 impl<'a> AuronCallNativeWrapper<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/AuronCallNativeWrapper";
+    pub const SIG_TYPE: &'static str = "org/apache/auron/jni/AuronCallNativeWrapper";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<AuronCallNativeWrapper<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
@@ -1467,7 +1455,7 @@ pub struct AuronOnHeapSpillManager<'a> {
     pub method_releaseSpill_ret: ReturnType,
 }
 impl<'a> AuronOnHeapSpillManager<'a> {
-    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/memory/OnHeapSpillManager";
+    pub const SIG_TYPE: &'static str = "org/apache/spark/sql/auron/memory/SparkOnHeapSpillManager";
 
     pub fn new(env: &JNIEnv<'a>) -> JniResult<AuronOnHeapSpillManager<'a>> {
         let class = get_global_jclass(env, Self::SIG_TYPE)?;
