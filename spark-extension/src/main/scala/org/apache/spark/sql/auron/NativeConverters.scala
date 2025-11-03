@@ -880,6 +880,9 @@ object NativeConverters extends Logging {
       case Month(child) => buildExtScalarFunction("Month", child :: Nil, IntegerType)
       case DayOfMonth(child) => buildExtScalarFunction("Day", child :: Nil, IntegerType)
 
+      case e: Levenshtein =>
+        buildScalarFunction(pb.ScalarFunction.Levenshtein, e.children, e.dataType)
+
       // startswith is converted to scalar function in pruning-expr mode
       case StartsWith(expr, Literal(prefix, StringType)) if isPruningExpr =>
         buildExprNode(
