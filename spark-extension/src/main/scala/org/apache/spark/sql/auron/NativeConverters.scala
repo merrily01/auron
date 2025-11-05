@@ -794,6 +794,8 @@ object NativeConverters extends Logging {
         buildScalarFunction(pb.ScalarFunction.Log2, e.children.map(nullIfNegative), e.dataType)
       case e: Log10 =>
         buildScalarFunction(pb.ScalarFunction.Log10, e.children.map(nullIfNegative), e.dataType)
+      case e: Nvl2 =>
+        buildScalarFunction(pb.ScalarFunction.Nvl2, e.children, e.dataType)
       case e: Floor if !e.dataType.isInstanceOf[DecimalType] =>
         if (e.child.dataType.isInstanceOf[LongType]) {
           convertExprWithFallback(e.child, isPruningExpr, fallback)
@@ -821,10 +823,12 @@ object NativeConverters extends Logging {
           }
         }
       case e: Expm1 => buildScalarFunction(pb.ScalarFunction.Expm1, e.children, e.dataType)
+      case e: Least => buildScalarFunction(pb.ScalarFunction.Least, e.children, e.dataType)
       case e: Factorial =>
         buildScalarFunction(pb.ScalarFunction.Factorial, e.children, e.dataType)
       case e: Hex => buildScalarFunction(pb.ScalarFunction.Hex, e.children, e.dataType)
-
+      case e: IsNaN =>
+        buildScalarFunction(pb.ScalarFunction.IsNaN, e.children, e.dataType)
       case e: Round =>
         e.scale match {
           case Literal(n: Int, _) =>
@@ -834,6 +838,8 @@ object NativeConverters extends Logging {
         }
 
       case e: Signum => buildScalarFunction(pb.ScalarFunction.Signum, e.children, e.dataType)
+      case e: FindInSet =>
+        buildScalarFunction(pb.ScalarFunction.FindInSet, e.children, e.dataType)
       case e: Abs if e.dataType.isInstanceOf[FloatType] || e.dataType.isInstanceOf[DoubleType] =>
         buildScalarFunction(pb.ScalarFunction.Abs, e.children, e.dataType)
       case e: OctetLength =>
@@ -876,8 +882,13 @@ object NativeConverters extends Logging {
         buildExtScalarFunction("Murmur3Hash", children, IntegerType)
       case XxHash64(children, 42L) =>
         buildExtScalarFunction("XxHash64", children, LongType)
+      case e: Greatest =>
+        buildScalarFunction(pb.ScalarFunction.Greatest, e.children, e.dataType)
       case e: Pow =>
         buildScalarFunction(pb.ScalarFunction.Power, e.children, e.dataType)
+      case e: Nvl =>
+        buildScalarFunction(pb.ScalarFunction.Nvl, e.children, e.dataType)
+
       case Year(child) => buildExtScalarFunction("Year", child :: Nil, IntegerType)
       case Month(child) => buildExtScalarFunction("Month", child :: Nil, IntegerType)
       case DayOfMonth(child) => buildExtScalarFunction("Day", child :: Nil, IntegerType)
