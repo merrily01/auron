@@ -38,19 +38,28 @@ documentation:
   - "**/*.md"
   - "LICENSE"
 
+core:
+  - "auron-core/**"
+
 common:
   - "common/**"
-
-spark:
-  - "spark-extension/**"
-  - "spark-extension-shims-spark/**"
-  - "spark-version-annotation-macros/**"
 
 native:
   - "native-engine/**"
 
 hadoop:
   - "hadoop-shim/**"
+
+spark:
+  - "spark-extension/**"
+  - "spark-extension-shims-spark/**"
+  - "spark-version-annotation-macros/**"
+
+spark-ui:
+  - "auron-spark-ui/**"
+
+flink:
+  - "auron-flink-extension/**"
 
 thirdparty-celeborn:
   - "thirdparty/auron-celeborn-*/**"
