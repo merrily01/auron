@@ -32,9 +32,7 @@ import org.apache.spark.sql.auron.Shims
 import org.apache.spark.sql.catalyst.expressions.Attribute
 import org.apache.spark.sql.catalyst.expressions.Literal
 import org.apache.spark.sql.catalyst.plans.physical.Partitioning
-import org.apache.spark.sql.execution.FileSourceScanExec
-import org.apache.spark.sql.execution.LeafExecNode
-import org.apache.spark.sql.execution.SparkPlan
+import org.apache.spark.sql.execution.{FileSourceScanExec, LeafExecNode, SparkPlan}
 import org.apache.spark.sql.execution.datasources.FilePartition
 import org.apache.spark.sql.execution.datasources.FileScanRDD
 import org.apache.spark.sql.execution.datasources.PartitionedFile
@@ -154,4 +152,8 @@ abstract class NativeFileSourceScanBase(basedFileScan: FileSourceScanExec)
   }
 
   override protected def doCanonicalize(): SparkPlan = basedFileScan.canonicalized
+
+  override def verboseStringWithOperatorId(): String = {
+    basedFileScan.verboseStringWithOperatorId()
+  }
 }
