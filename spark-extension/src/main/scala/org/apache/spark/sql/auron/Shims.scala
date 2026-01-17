@@ -28,6 +28,7 @@ import org.apache.spark.shuffle.ShuffleHandle
 import org.apache.spark.shuffle.ShuffleWriteMetricsReporter
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.auron.join.JoinBuildSides.JoinBuildSide
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.catalog.CatalogTable
 import org.apache.spark.sql.catalyst.expressions.Attribute
@@ -86,7 +87,7 @@ abstract class Shims {
       leftKeys: Seq[Expression],
       rightKeys: Seq[Expression],
       joinType: JoinType,
-      broadcastSide: BroadcastSide,
+      broadcastSide: JoinBuildSide,
       isNullAwareAntiJoin: Boolean): NativeBroadcastJoinBase
 
   def createNativeSortMergeJoinExec(
@@ -103,7 +104,7 @@ abstract class Shims {
       leftKeys: Seq[Expression],
       rightKeys: Seq[Expression],
       joinType: JoinType,
-      buildSide: BuildSide,
+      buildSide: JoinBuildSide,
       isSkewJoin: Boolean): SparkPlan
 
   def createNativeExpandExec(
@@ -261,6 +262,8 @@ abstract class Shims {
   def postTransform(plan: SparkPlan, sc: SparkContext): Unit = {}
 
   def getAdaptiveInputPlan(exec: AdaptiveSparkPlanExec): SparkPlan
+
+  def getJoinBuildSide(exec: SparkPlan): JoinBuildSide
 }
 
 object Shims {
