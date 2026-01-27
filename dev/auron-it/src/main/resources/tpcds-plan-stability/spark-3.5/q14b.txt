@@ -1539,7 +1539,7 @@ Join condition: None
 
 (223) NativeTakeOrdered
 Input [12]: [channel#51, i_brand_id#36, i_class_id#37, i_category_id#38, sales#52, number_sales#53, channel#72, i_brand_id#59, i_class_id#60, i_category_id#61, sales#73, number_sales#74]
-Arguments: X, [i_brand_id#36 ASC NULLS FIRST, i_class_id#37 ASC NULLS FIRST, i_category_id#38 ASC NULLS FIRST]
+Arguments: X, X, [i_brand_id#36 ASC NULLS FIRST, i_class_id#37 ASC NULLS FIRST, i_category_id#38 ASC NULLS FIRST]
 
 (224) NativeProject
 Output [12]: [channel#51, i_brand_id#36, i_class_id#37, i_category_id#38, sales#52, number_sales#53, channel#72, i_brand_id#59, i_class_id#60, i_category_id#61, sales#73, number_sales#74]
