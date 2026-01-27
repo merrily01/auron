@@ -836,8 +836,7 @@ object AuronConverters extends Logging {
           addRenameColumnsExec(convertToNative(exec.child))
         case _ =>
           if (needRenameColumns(exec.child)) {
-            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId) :+
-              NativeAggBase.AGG_BUF_COLUMN_NAME
+            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId)
             Shims.get.createNativeRenameColumnsExec(convertToNative(exec.child), newNames)
           } else {
             convertToNative(exec.child)
@@ -893,8 +892,7 @@ object AuronConverters extends Logging {
           addRenameColumnsExec(convertToNative(exec.child))
         case _ =>
           if (needRenameColumns(exec.child)) {
-            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId) :+
-              NativeAggBase.AGG_BUF_COLUMN_NAME
+            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId)
             Shims.get.createNativeRenameColumnsExec(convertToNative(exec.child), newNames)
           } else {
             convertToNative(exec.child)
@@ -947,8 +945,7 @@ object AuronConverters extends Logging {
           addRenameColumnsExec(convertToNative(child))
         case _ =>
           if (needRenameColumns(child)) {
-            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId) :+
-              NativeAggBase.AGG_BUF_COLUMN_NAME
+            val newNames = exec.groupingExpressions.map(Util.getFieldNameByExprId)
             Shims.get.createNativeRenameColumnsExec(convertToNative(child), newNames)
           } else {
             convertToNative(child)
