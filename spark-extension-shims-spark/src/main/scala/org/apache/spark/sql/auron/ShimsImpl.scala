@@ -19,6 +19,7 @@ package org.apache.spark.sql.auron
 import java.io.File
 import java.util.UUID
 
+import scala.annotation.nowarn
 import scala.collection.mutable
 
 import org.apache.commons.lang3.reflect.FieldUtils
@@ -284,6 +285,7 @@ class ShimsImpl extends Shims with Logging {
       child: SparkPlan): NativeGenerateBase =
     NativeGenerateExec(generator, requiredChildOutput, outer, generatorOutput, child)
 
+  @sparkver("3.4 / 3.5")
   private def effectiveLimit(rawLimit: Int): Int =
     if (rawLimit == -1) Int.MaxValue else rawLimit
 
@@ -989,6 +991,7 @@ class ShimsImpl extends Shims with Logging {
     }
   }
 
+  @nowarn("cat=unused") // Some params temporarily unused
   @sparkver("3.4 / 3.5")
   private def convertPromotePrecision(
       e: Expression,
@@ -1021,6 +1024,7 @@ class ShimsImpl extends Shims with Logging {
     }
   }
 
+  @nowarn("cat=unused") // Some params temporarily unused
   @sparkver("3.0 / 3.1 / 3.2")
   private def convertBloomFilterAgg(agg: AggregateFunction): Option[pb.PhysicalAggExprNode] = None
 
@@ -1047,6 +1051,7 @@ class ShimsImpl extends Shims with Logging {
     }
   }
 
+  @nowarn("cat=unused") // Some params temporarily unused
   @sparkver("3.0 / 3.1 / 3.2")
   private def convertBloomFilterMightContain(
       e: Expression,
