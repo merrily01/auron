@@ -28,6 +28,8 @@ extern crate datafusion;
 extern crate datafusion_ext_commons;
 extern crate prost;
 extern crate prost_reflect;
+extern crate rdkafka;
+extern crate sonic_rs;
 
 // execution plan implementations
 pub mod agg;
