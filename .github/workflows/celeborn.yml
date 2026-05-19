@@ -20,13 +20,7 @@ name: Celeborn
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
-      - branch-*
   pull_request:
-    branches:
-      - master
-      - branch-*
 
 concurrency:
   group: celeborn-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
